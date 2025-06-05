@@ -28,6 +28,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
+  bool _isValidEmail(String email) {
+    return RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,8 +102,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         label: 'Email',
                         icon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) =>
-                            value!.isEmpty ? 'Please enter your email' : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Please enter your email';
+                          if (!_isValidEmail(value)) return 'Enter a valid email';
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 16),
                       _buildInputField(
@@ -117,21 +124,22 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         obscureText: _obscurePassword,
                         onToggle: () =>
                             setState(() => _obscurePassword = !_obscurePassword),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Please enter a password' : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Please enter a password';
+                          if (value.length < 8) return 'Password must be at least 8 characters';
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 16),
                       _buildPasswordField(
                         controller: _confirmPasswordController,
                         label: 'Confirm Password',
                         obscureText: _obscureConfirmPassword,
-                        onToggle: () => setState(() =>
-                            _obscureConfirmPassword = !_obscureConfirmPassword),
+                        onToggle: () =>
+                            setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                         validator: (value) {
-                          if (value!.isEmpty) return 'Please confirm your password';
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
-                          }
+                          if (value == null || value.isEmpty) return 'Please confirm your password';
+                          if (value != _passwordController.text) return 'Passwords do not match';
                           return null;
                         },
                       ),
@@ -196,7 +204,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           const SizedBox(width: 20),
                           _buildSocialButton('assets/facebook.png', Colors.blue),
                           const SizedBox(width: 20),
-                          _buildSocialButton('assets/apple.png', Colors.black),
+                          _buildSocialButton('assets/instagram.png', Colors.black),
                         ],
                       ),
                       const SizedBox(height: 24),

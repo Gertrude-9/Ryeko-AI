@@ -2,8 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:ryeko_ai/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'registration_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  final String validEmail = "test@example.com"; // Replace with API logic
+  final String validPassword = "123456";
+
+  bool _obscurePassword = true;
+
+  void _signIn() {
+    String email = emailController.text.trim();
+    String password = passwordController.text;
+
+    if (email == validEmail && password == validPassword) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Invalid email or password"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +50,6 @@ class LoginScreen extends StatelessWidget {
             color: Colors.white,
             fontSize: 22,
             fontWeight: FontWeight.bold,
-          ),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-
           ),
         ),
       ),
@@ -70,6 +97,7 @@ class LoginScreen extends StatelessWidget {
                     _buildInputField(
                       label: 'Email or Phone',
                       icon: Icons.email_outlined,
+                      controller: emailController,
                     ),
                     const SizedBox(height: 20),
                     _buildPasswordField(),
@@ -78,7 +106,7 @@ class LoginScreen extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
-                          // TODO: Implement forgot password
+                          // TODO: Forgot Password
                         },
                         child: Text(
                           'Forgot Password?',
@@ -91,14 +119,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const DashboardScreen(),
-                          ),
-                        );
-                      },
+                      onPressed: _signIn,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF26ae60),
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -165,7 +186,7 @@ class LoginScreen extends StatelessWidget {
                         const SizedBox(width: 20),
                         _buildSocialButton('assets/facebook.png', Colors.blue),
                         const SizedBox(width: 20),
-                        _buildSocialButton('assets/apple.png', Colors.black),
+                        _buildSocialButton('assets/instagram.png', Colors.black),
                       ],
                     ),
                     const SizedBox(height: 40),
@@ -179,8 +200,13 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildInputField({required String label, required IconData icon}) {
+  Widget _buildInputField({
+    required String label,
+    required IconData icon,
+    required TextEditingController controller,
+  }) {
     return TextField(
+      controller: controller,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Colors.green.shade600),
@@ -202,16 +228,22 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildPasswordField() {
+  Widget _buildPasswordField() {
     return TextField(
-      obscureText: true,
+      controller: passwordController,
+      obscureText: _obscurePassword,
       decoration: InputDecoration(
         labelText: 'Password',
         prefixIcon: Icon(Icons.lock_outline, color: Colors.green.shade600),
         suffixIcon: IconButton(
-          icon: const Icon(Icons.visibility_off, color: Colors.grey),
+          icon: Icon(
+            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+            color: Colors.grey,
+          ),
           onPressed: () {
-            // TODO: Add password visibility toggle
+            setState(() {
+              _obscurePassword = !_obscurePassword;
+            });
           },
         ),
         filled: true,
