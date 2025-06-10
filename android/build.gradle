@@ -1,3 +1,15 @@
+buildscript {
+    ext.kotlin_version = '1.9.22'  // Correct version for Flutter 3.22+
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.3.0'  // Latest stable AGP
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -5,14 +17,12 @@ allprojects {
     }
 }
 
-rootProject.buildDir = "../build"
+rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(":app")
+    project.evaluationDependsOn(':app')  // Moved inside subprojects block
 }
 
-tasks.register("clean", Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
